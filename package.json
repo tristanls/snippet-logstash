@@ -1,6 +1,6 @@
 {
   "name": "snippet-logstash",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Logstash snippet controller",
   "scripts": {
     "test": "node scripts/test.js"
