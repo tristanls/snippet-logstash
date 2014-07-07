@@ -46,6 +46,9 @@ var LOGSTASH_HOME = path.normalize(path.join(__dirname, 'logstash-1.4.2'));
 
 /*
   * `options`:
+    * `configFilePath`: _String_
+        _(Default: snippet-logstash/config/combined-apache-log-plus.conf)_
+        The path to Logstash configuration file.
     * `executable`: _String_ _(Default: LOGSTASH_HOME/bin/logstash)_ The path to
         Logstash executable.
 */
@@ -55,6 +58,7 @@ var SnippetLogstash = module.exports = function SnippetLogstash(options) {
 
     options = options || {};
 
+    self.configFilePath = options.configFilePath || DEFAULT_CONFIG_FILE_PATH;
     self.executable = options.executable || LOGSTASH_HOME + '/bin/logstash';
 
     self.process = null;
@@ -82,17 +86,13 @@ SnippetLogstash.prototype.close = function close(callback) {
 };
 
 /*
-  * `configFilePath`: _String_
-      _(Default: snippet-logstash/config/combined-apache-log-plus.conf)_
-      The path to Logstash configuration file.
   * `callback`: _Function_ _(Default: undefined)_ `function (processObject) {}`
       Optional callback to call once the Logstash process is started.
 */
-SnippetLogstash.prototype.listen = function listen(configFilePath, callback) {
+SnippetLogstash.prototype.listen = function listen(callback) {
     var self = this;
 
-    configFilePath = configFilePath || DEFAULT_CONFIG_FILE_PATH;
-    self.process = spawn(self.executable, ['-f', configFilePath]);
+    self.process = spawn(self.executable, ['-f', self.configFilePath]);
 
     self.process.stdout.on('data', function (data) {
         self.emit('stdout', data);

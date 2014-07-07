@@ -45,6 +45,13 @@ test['SnippetLogstash should have default executable path'] = function (test) {
     test.done();
 };
 
+test['SnippetLogstash should have default configFilePath'] = function (test) {
+    test.expect(1);
+    var snippetLogstash = new SnippetLogstash();
+    test.ok(snippetLogstash.configFilePath);
+    test.done();
+};
+
 test['SnippetLogstash should not have process instance handle'] = function (test) {
     test.expect(1);
     var snippetLogstash = new SnippetLogstash();

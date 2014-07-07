@@ -42,7 +42,7 @@ test['should set process instance handle to null'] = function (test) {
         test.strictEqual(snippetLogstash.process, null);
         test.done();
     });
-    snippetLogstash.listen(undefined, function () {
+    snippetLogstash.listen(function () {
         snippetLogstash.close();
     });
 };
@@ -55,7 +55,7 @@ test['should emit exit with code and signal when process instance terminates'] =
         test.equal(signal, 'SIGINT');
         test.done();
     });
-    snippetLogstash.listen(undefined, function () {
+    snippetLogstash.listen(function () {
         snippetLogstash.close();
     });
 };
@@ -63,7 +63,7 @@ test['should emit exit with code and signal when process instance terminates'] =
 test['should call callback with code and signal when process terminates'] = function (test) {
     test.expect(2);
     var snippetLogstash = new SnippetLogstash();
-    snippetLogstash.listen(undefined, function () {
+    snippetLogstash.listen(function () {
         snippetLogstash.close(function (code, signal) {
             test.strictEqual(code, null);
             test.equal(signal, 'SIGINT');

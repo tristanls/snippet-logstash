@@ -46,7 +46,7 @@ test['should populate process instance handle with ChildProcess object'] = funct
     snippetLogstash.on('exit', function () {
         test.done();
     });
-    snippetLogstash.listen(undefined, function (stdin) {
+    snippetLogstash.listen(function (stdin) {
         // indirectly test for ChildProcess object by testing for EventEmitter
         // with stdin, stdout, stderr streams
         test.ok(snippetLogstash.process instanceof events.EventEmitter);
@@ -63,7 +63,7 @@ test['should call callback with stdin handle to the process'] = function (test) 
     snippetLogstash.on('exit', function () {
         test.done();
     });
-    snippetLogstash.listen(undefined, function (stdin) {
+    snippetLogstash.listen(function (stdin) {
         test.strictEqual(stdin, snippetLogstash.process.stdin);
         snippetLogstash.process.kill('SIGINT');
     });
@@ -83,7 +83,11 @@ test['should emit \'listening\' event with stdin handle to the process'] = funct
 };
 
 test['should parse combined-apache-log-plus by default, send to elasticsearch using bulk HTTP POST and emit same data via stdout'] = function (test) {
-    test.expect(5);
+    var logFields = ['message', '@version', '@timestamp', 'clientip', 'ident',
+        'auth', 'timestamp', 'verb', 'request', 'httpversion', 'response',
+        'bytes', 'referrer', 'agent', 'latencyinms', 'forwardedforip',
+        'something', 'hostname', 'port'];
+    test.expect(3 + (2 * logFields.length));
     var snippetLogstash = new SnippetLogstash();
 
     var expectedJsonPath = path.normalize(path.join(__dirname, 'data', 'test-apache.json'));
@@ -109,10 +113,14 @@ test['should parse combined-apache-log-plus by default, send to elasticsearch us
                 test.strictEqual(command0.index._id, null);
                 test.equal(command0.index._index, 'logstash-2013.12.11');
 
-                test.equal(data[1], expectedJson.toString('utf8'));
+                var command1 = JSON.parse(data[1]);
+                var expected = JSON.parse(expectedJson.toString('utf8'));
+                logFields.forEach(function (key) {
+                    test.equal(command1[key], expected[key]);
+                });
             } catch (e) {
                 console.error(e);
-                test.ok(true);
+                test.ok(false);
             }
 
             snippetLogstash.close();
@@ -131,7 +139,15 @@ test['should parse combined-apache-log-plus by default, send to elasticsearch us
         testData.pipe(logstashStdin);
     });
     snippetLogstash.on('stdout', function (data) {
-        test.equal(data.toString('utf8'), expectedJson.toString('utf8'));
+        try {
+            var entry = JSON.parse(data.toString('utf8'));
+            var expected = JSON.parse(expectedJson.toString('utf8'));
+            logFields.forEach(function (key) {
+                test.equal(entry[key], expected[key]);
+            });
+        } catch (e) {
+            console.log(data.toString('utf8'));
+        }
     });
 
     elasticsearchMock.listen(9200, 'localhost', function () {
