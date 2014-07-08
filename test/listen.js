@@ -82,11 +82,10 @@ test['should emit \'listening\' event with stdin handle to the process'] = funct
     snippetLogstash.listen();
 };
 
-test['should parse combined-apache-log-plus by default, send to elasticsearch using bulk HTTP POST and emit same data via stdout'] = function (test) {
+test['should parse combined-apache-log by default, send to elasticsearch using bulk HTTP POST and emit same data via stdout'] = function (test) {
     var logFields = ['message', '@version', '@timestamp', 'clientip', 'ident',
         'auth', 'timestamp', 'verb', 'request', 'httpversion', 'response',
-        'bytes', 'referrer', 'agent', 'latencyinms', 'forwardedforip',
-        'something', 'hostname', 'port'];
+        'bytes', 'referrer', 'agent'];
     test.expect(3 + (2 * logFields.length));
     var snippetLogstash = new SnippetLogstash();
 

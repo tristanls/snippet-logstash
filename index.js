@@ -41,7 +41,7 @@ var util = require('util');
 var TEMP_DIR = shelljs.tempdir();
 
 var DEFAULT_CONFIG_FILE_PATH = path.normalize(
-        path.join(__dirname, 'config', 'combined-apache-log-plus.conf'));
+        path.join(__dirname, 'config', 'combined-apache-log.conf'));
 var LOGSTASH_HOME = path.normalize(path.join(__dirname, 'logstash-1.4.2'));
 
 /*
